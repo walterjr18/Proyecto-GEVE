@@ -1,0 +1,1068 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Proyecto GEVE 2026</title>
+
+<style>
+:root {
+  --azul:#2457a7;
+  --azul-oscuro:#162b4d;
+  --fondo:#f3f6fb;
+  --borde:#d8e0ec;
+  --texto:#1c2940;
+}
+* { box-sizing:border-box; }
+body {
+  margin:0; font-family:Arial,sans-serif;
+  background:var(--fondo); color:var(--texto);
+}
+button,input,select,textarea { font:inherit; }
+button {
+  cursor:pointer; border:0; border-radius:7px;
+  padding:10px 13px; font-weight:bold;
+}
+.primary { background:var(--azul);color:white; }
+.secondary { background:#e8eef8;color:var(--azul-oscuro); }
+.danger { background:#fdebed;color:#a82b39; }
+.sidebar {
+  position:fixed;inset:0 auto 0 0;width:230px;
+  background:var(--azul-oscuro);color:white;padding:22px 14px;
+}
+.brand { padding:5px 8px 22px;border-bottom:1px solid #ffffff30; }
+.brand h2 { font-size:17px;margin:0 0 6px; }
+.brand small { color:#b9c9e4; }
+nav { display:grid;gap:7px;margin-top:22px; }
+nav button {
+  text-align:left;background:transparent;color:#e2eaf7;
+}
+nav button.active,nav button:hover { background:#ffffff20; }
+main { margin-left:230px;padding:25px; }
+header {
+  display:flex;justify-content:space-between;align-items:center;
+  gap:15px;flex-wrap:wrap;margin-bottom:22px;
+}
+h1 { font-size:25px;margin:5px 0; }
+h3 { margin-top:0; }
+.panel {
+  background:white;border:1px solid #e5eaf2;border-radius:12px;
+  padding:18px;margin-bottom:18px;
+  box-shadow:0 5px 20px #1830530b;
+}
+.page { display:none; }
+.page.active { display:block; }
+.stats {
+  display:grid;grid-template-columns:repeat(4,1fr);
+  gap:12px;margin-bottom:18px;
+}
+.stat {
+  background:white;border:1px solid var(--borde);
+  border-radius:10px;padding:17px;
+}
+.stat strong { display:block;font-size:28px;margin-top:8px; }
+.muted { color:#65748b;font-size:12px; }
+.controls {
+  display:flex;gap:10px;align-items:end;flex-wrap:wrap;
+  margin-bottom:16px;
+}
+.field { display:grid;gap:5px; }
+.field label { font-size:12px;font-weight:bold; }
+input,select,textarea {
+  border:1px solid #cfd8e6;border-radius:7px;
+  padding:9px;background:white;max-width:100%;
+}
+.tablewrap { overflow:auto;border:1px solid var(--borde); }
+table { border-collapse:collapse;width:100%;background:white;font-size:12px; }
+th,td { border:1px solid #cbd5e1;padding:8px;text-align:center; }
+th { background:#eaf0fa; }
+tbody tr:nth-child(even) { background:#f3f6fb; }
+td.name,th.name { text-align:left;min-width:190px; }
+.monthtable { min-width:900px; }
+.monthtable .monthhead { background:var(--azul);color:white; }
+.monthtable .dayhead { background:#4776c3;color:white; }
+.monthtable td { padding:5px 3px; }
+.status { width:100%;min-width:88px;padding:5px;font-size:11px; }
+.cards { display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px; }
+.childcard {
+  background:white;border:1px solid var(--borde);
+  border-radius:10px;padding:14px;overflow-wrap:anywhere;
+}
+.photo {
+  width:75px;height:75px;border-radius:10px;object-fit:cover;
+  background:#e8eef8;display:block;margin-bottom:10px;
+}
+.formgrid { display:grid;grid-template-columns:1fr 1fr;gap:12px; }
+.formgrid .wide { grid-column:1/-1; }
+.formgrid .field input,.formgrid .field textarea { width:100%; }
+.actions { display:flex;gap:7px;flex-wrap:wrap;margin-top:12px; }
+.notice {
+  padding:12px;background:#fff8e8;border:1px solid #f0d9a5;
+  border-radius:8px;font-size:12px;line-height:1.5;margin-bottom:15px;
+}
+.badge { padding:4px 7px;border-radius:5px;font-weight:bold;font-size:10px; }
+.present { background:#dff5e9;color:#16764f; }
+.absent { background:#fde8e9;color:#ad2f3b; }
+.justified { background:#fff0d2;color:#885a08; }
+.noclass { background:#e9edf3;color:#58677d; }
+@media(max-width:1000px) {
+  .stats { grid-template-columns:repeat(2,1fr); }
+  .cards { grid-template-columns:repeat(2,1fr); }
+}
+@media(max-width:700px) {
+  .sidebar { position:static;width:auto; }
+  nav { display:flex;overflow:auto; }
+  nav button { white-space:nowrap; }
+  main { margin:0;padding:12px; }
+  .cards,.formgrid { grid-template-columns:1fr; }
+  .formgrid .wide { grid-column:auto; }
+}
+@media print {
+  @page { size:A4 landscape;margin:7mm; }
+  body { background:white; }
+  .sidebar,header,.no-print,#page-dashboard,#page-children,
+  #page-history,#page-backup,.controls,.notice { display:none!important; }
+  main { margin:0;padding:0; }
+  .page { display:none!important; }
+  #page-month { display:block!important; }
+  #dailyPanel { display:none!important; }
+  .panel { box-shadow:none;border:0;padding:0; }
+  .monthtable { min-width:0;width:100%;table-layout:fixed; }
+  .monthtable th,.monthtable td {
+    font-size:8px;padding:3px 1px;border:1px solid #111;
+    color:#111;height:15px;
+  }
+  .monthtable .monthhead {
+    background:#d7e4f7!important;color:#111!important;
+    print-color-adjust:exact;
+  }
+  .monthtable .dayhead {
+    background:#4776c3!important;color:white!important;
+    print-color-adjust:exact;
+  }
+  .monthtable td.name { min-width:0;white-space:normal; }
+}
+</style>
+</head>
+
+<body>
+<aside class="sidebar">
+  <div class="brand">
+    <h2>PROYECTO GEVE</h2>
+    <small>Control de asistencia · 2026</small>
+  </div>
+  <nav>
+    <button class="active" onclick="ir('dashboard',this)">▦ Resumen General</button>
+    <button onclick="ir('month',this)">▤ Control de asistencia</button>
+    <button onclick="ir('children',this)">♙ Niños y expedientes</button>
+    <button onclick="ir('history',this)">◷ Historial</button>
+    <button onclick="ir('backup',this)">⇧ Copias de seguridad</button>
+  </nav>
+</aside>
+
+<main>
+<header>
+  <div>
+    <div class="muted">GESTIÓN DEL PROYECTO GEVE</div>
+    <h1 id="titulo">Resumen General</h1>
+    <div class="muted">Asistencia, Devocionales y Expedientes.</div>
+  </div>
+  <div class="no-print">
+    <button class="secondary" onclick="ir('children');abrirFormulario()">+ Añadir niño</button>
+    <button class="primary" onclick="ir('month')">Tomar asistencia</button>
+  </div>
+</header>
+
+<section id="page-dashboard" class="page active">
+  <div class="stats">
+    <div class="stat">Niños registrados<strong id="totalNinos">0</strong></div>
+    <div class="stat">Fechas guardadas<strong id="totalFechas">0</strong></div>
+    <div class="stat">Fotografías<strong id="totalFotos">0</strong></div>
+    <div class="stat">Documentos PDF<strong id="totalPDF">0</strong></div>
+  </div>
+  <div class="panel">
+    <h3>Accesos rápidos</h3>
+    <div class="actions">
+      <button class="primary" onclick="ir('month')">Tomar asistencia</button>
+      <button class="secondary" onclick="ir('children');abrirFormulario()">Registrar niño</button>
+      <button class="secondary" onclick="ir('history')">Consultar historial</button>
+      <button class="secondary" onclick="ir('backup')">Copias de seguridad</button>
+    </div>
+  </div>
+  <div class="panel">
+    <h3>Últimas fechas registradas</h3>
+    <div id="ultimosRegistros"></div>
+  </div>
+  <div class="notice">
+    Los datos se guardan en este navegador y en esta computadora.
+    Exporta copias de seguridad con frecuencia. Protege los documentos
+    personales y fotografías de los niños.
+  </div>
+</section>
+
+<section id="page-month" class="page">
+  <div class="panel no-print" id="dailyPanel">
+    <h3>Registrar asistencia del día</h3>
+    <div class="controls">
+      <div class="field">
+        <label>Mes</label>
+        <input type="month" id="mes" value="2026-10" onchange="dibujarMes()">
+      </div>
+      <div class="field">
+        <label>Fecha de actividad</label>
+        <input type="date" id="fecha" onchange="cargarFecha()">
+      </div>
+      <div class="field">
+        <label>Actividad</label>
+        <select id="actividad">
+          <option value="auto">Automática según el día</option>
+          <option value="miércoles">Miércoles: asistencia y devocional</option>
+          <option value="viernes">Viernes: asistencia</option>
+          <option value="domingo">Domingo: servicio dominical</option>
+        </select>
+      </div>
+      <div class="field">
+        <label>Nota del día</label>
+        <input id="notaDia" placeholder="Observaciones">
+      </div>
+    </div>
+    <div class="actions">
+      <button class="secondary" onclick="marcarTodos('presente')">Todos presentes</button>
+      <button class="secondary" onclick="marcarTodos('ausente')">Todos ausentes</button>
+      <button class="secondary" onclick="noHuboProyecto()">No hubo proyecto</button>
+      <button class="primary" onclick="guardarFecha()">Guardar asistencia</button>
+      <button class="secondary" onclick="imprimirMes()">Imprimir mes</button>
+    </div>
+    <p class="muted" id="avisoDia">
+      El devocional se revisa únicamente los miércoles.
+    </p>
+    <div id="tablaDiaria" class="tablewrap"></div>
+  </div>
+
+  <div class="panel">
+    <h3 style="text-align:center">CONTROL DE ASISTENCIA - PROYECTO GEVE 2026</h3>
+    <div class="tablewrap">
+      <table class="monthtable" id="tablaMes"></table>
+    </div>
+    <p class="muted">✓ Presente · F Falta · J Justificada · NP No hubo proyecto</p>
+  </div>
+</section>
+
+<section id="page-children" class="page">
+  <div class="panel">
+    <h3>Niños y expedientes</h3>
+    <div class="controls">
+      <div class="field">
+        <label>Buscar niño</label>
+        <input id="buscar" placeholder="Nombre o apellido" oninput="dibujarNinos()">
+      </div>
+      <button class="primary" onclick="abrirFormulario()">+ Registrar niño</button>
+    </div>
+    <div id="listaNinos" class="cards"></div>
+  </div>
+  <div class="panel" id="formPanel" hidden>
+    <h3 id="formTitulo">Registrar niño</h3>
+    <form id="formNino" onsubmit="guardarNino(event)">
+      <input type="hidden" id="ninoId">
+      <div class="formgrid">
+        <div class="field">
+          <label>Nombre y apellido *</label>
+          <input id="nombre" required>
+        </div>
+        <div class="field">
+          <label>Número o código</label>
+          <input id="codigo">
+        </div>
+        <div class="field">
+          <label>Fecha de nacimiento</label>
+          <input id="nacimiento" type="date">
+        </div>
+        <div class="field">
+          <label>Padre y/o madre</label>
+          <input id="padres">
+        </div>
+        <div class="field">
+          <label>Representante</label>
+          <input id="representante">
+        </div>
+        <div class="field">
+          <label>Teléfono</label>
+          <input id="telefono" type="tel">
+        </div>
+        <div class="field wide">
+          <label>Fotografía</label>
+          <input id="foto" type="file" accept="image/png,image/jpeg,image/webp">
+        </div>
+        <div class="field wide">
+          <label>Documento escaneado en PDF</label>
+          <input id="pdf" type="file" accept="application/pdf">
+        </div>
+        <div class="field wide">
+          <label>Observaciones</label>
+          <textarea id="observaciones"></textarea>
+        </div>
+      </div>
+      <p class="muted" id="archivosActuales"></p>
+      <div class="actions">
+        <button class="primary" type="submit">Guardar expediente</button>
+        <button class="secondary" type="button" onclick="cerrarFormulario()">Cancelar</button>
+      </div>
+    </form>
+  </div>
+</section>
+
+<section id="page-history" class="page">
+  <div class="panel">
+    <h3>Historial de asistencia y faltas</h3>
+    <div class="controls">
+      <div class="field">
+        <label>Niño</label>
+        <select id="filtroNino" onchange="dibujarHistorial()">
+          <option value="">Todos los niños</option>
+        </select>
+      </div>
+      <div class="field">
+        <label>Mes</label>
+        <input type="month" id="filtroMes" onchange="dibujarHistorial()">
+      </div>
+      <div class="field">
+        <label>Estado</label>
+        <select id="filtroEstado" onchange="dibujarHistorial()">
+          <option value="">Todos</option>
+          <option value="presente">Presente</option>
+          <option value="ausente">Falta</option>
+          <option value="justificado">Justificada</option>
+          <option value="no hubo proyecto">No hubo proyecto</option>
+        </select>
+      </div>
+    </div>
+    <div id="tablaHistorial"></div>
+  </div>
+</section>
+
+<section id="page-backup" class="page">
+  <div class="panel">
+    <h3>Copias de seguridad</h3>
+    <div class="notice">
+      La copia contiene los niños, sus datos, las fotografías, los PDF
+      y los registros de asistencia. Guárdala en un lugar seguro.
+    </div>
+    <button class="primary" onclick="exportar()">Descargar copia de seguridad</button>
+    <hr style="margin:22px 0;border:0;border-top:1px solid #ddd">
+    <h3>Restaurar una copia</h3>
+    <input type="file" id="archivoCopia" accept=".json,application/json">
+    <button class="secondary" onclick="importar()">Restaurar copia</button>
+    <hr style="margin:22px 0;border:0;border-top:1px solid #ddd">
+    <button class="danger" onclick="borrarTodo()">Eliminar todos los datos</button>
+  </div>
+</section>
+</main>
+
+<script>
+// =====================================================
+// 1. DATOS INICIALES
+// =====================================================
+
+const nombresIniciales = [
+"Mílton Esmaider Grefa Grefa",
+"Dulce Juliana Cerda Tapuy",
+"Anahí Juli Vargas Alvarado",
+"Jasmin Cerda",
+"Nahomi Lili Vargas Alvarado",
+"Sisa Romina Cerda Tapuy",
+"Tiago Dilan Cerda Chimbo",
+"Mileidy Grace Vargas Aguinda",
+"Damaris Shirley Calahucha Cerda",
+"Cristel Kimberly Cerda Grefa",
+"Valentina Aily Aguinda Cerda",
+"Emely Ester Cerda Grefa",
+"Jostin Michael Cerda Calahucha",
+"Kimberly Maite Cerda Calahucha",
+"Yareli Jamilet Gonzales Herrera",
+"Raiza Aitana Gonzales Alvarado",
+"Mateo Santiago Cerda Grefa",
+"Tiffany Valentina Shiguango Grefa",
+"Edwar Alexander Cerda Dawa",
+"Alis Britany Cerda Dawa",
+"Adrian Lino Vargas Alvarado",
+"Marlene Isabel Tapuy Alvarado",
+"Jesús Esteban Huatatoca Cerda",
+"Alison Soledad Yumbo",
+"Jamilet Janela Alvarado Amaya",
+"Elian Tunay",
+"Saskia Vargas",
+"Ney Huatatoca",
+"Alejandra Domenica Palma Andy",
+"Scarlet Mauly Carvajal Cerda",
+"Lian Alvarado Amaya",
+"Angy Mishel Cerda Shiguango"
+];
+
+const CLAVE = "GEVE_ASISTENCIA_2026";
+let datos = { ninos: [], registros: {}, siguienteId: 1 };
+
+function guardarDatos() {
+  try {
+    localStorage.setItem(CLAVE, JSON.stringify(datos));
+    return true;
+  } catch (error) {
+    alert("No se pudo guardar. El almacenamiento puede estar lleno. Exporta una copia y reduce el tamaño de fotos o PDF.");
+    return false;
+  }
+}
+
+function iniciar() {
+  try {
+    const guardado = localStorage.getItem(CLAVE);
+    if (guardado) {
+      datos = JSON.parse(guardado);
+      datos.ninos ||= [];
+      datos.registros ||= {};
+      datos.siguienteId ||= 1;
+    } else {
+      datos.ninos = nombresIniciales.map((nombre,i) => ({
+        id:i+1,nombre,codigo:String(i+1).padStart(2,"0"),
+        nacimiento:"",padres:"",representante:"",telefono:"",
+        observaciones:"",foto:"",pdf:""
+      }));
+      datos.siguienteId = datos.ninos.length + 1;
+      guardarDatos();
+    }
+  } catch (error) {
+    alert("No se pudieron cargar los datos guardados.");
+  }
+}
+
+// =====================================================
+// 2. NAVEGACIÓN
+// =====================================================
+
+function ir(pagina, boton) {
+  document.querySelectorAll(".page").forEach(p => p.classList.remove("active"));
+  document.getElementById("page-"+pagina).classList.add("active");
+  document.querySelectorAll("nav button").forEach(b => b.classList.remove("active"));
+  if (boton) boton.classList.add("active");
+
+  const titulos = {
+    dashboard:"Resumen general",
+    month:"Control de asistencia",
+    children:"Niños y expedientes",
+    history:"Historial de faltas",
+    backup:"Copias de seguridad"
+  };
+  document.getElementById("titulo").textContent = titulos[pagina];
+
+  if (pagina==="month") dibujarMes();
+  if (pagina==="children") dibujarNinos();
+  if (pagina==="history") {
+    actualizarFiltroNinos();
+    dibujarHistorial();
+  }
+  if (pagina==="dashboard") dibujarResumen();
+}
+
+function escapar(texto) {
+  return String(texto ?? "").replace(/[&<>"']/g, c => ({
+    "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"
+  })[c]);
+}
+
+// =====================================================
+// 3. FECHAS Y ASISTENCIA
+// =====================================================
+
+function fechaLocal(fecha) {
+  const [a,m,d] = fecha.split("-").map(Number);
+  return new Date(a,m-1,d);
+}
+
+function nombreDia(fecha) {
+  return ["domingo","lunes","martes","miércoles","jueves","viernes","sábado"]
+    [fechaLocal(fecha).getDay()];
+}
+
+function fechasDelMes(mes) {
+  if (!mes) return [];
+  const [a,m] = mes.split("-").map(Number);
+  const cantidad = new Date(a,m,0).getDate();
+  const salida = [];
+  for (let d=1; d<=cantidad; d++) {
+    const fecha = `${a}-${String(m).padStart(2,"0")}-${String(d).padStart(2,"0")}`;
+    if ([0,3,5].includes(fechaLocal(fecha).getDay())) salida.push(fecha);
+  }
+  return salida;
+}
+
+function abreviarFecha(fecha) {
+  const dia = fechaLocal(fecha).getDate();
+  const semana = fechaLocal(fecha).getDay();
+  const letra = semana===5 ? "V" : semana===0 ? "D" : "M";
+  return letra + String(dia).padStart(2,"0");
+}
+
+function registro(fecha) {
+  return datos.registros[fecha] || {
+    fecha,actividad:nombreDia(fecha),nota:"",
+    noProyecto:false,asistencia:{}
+  };
+}
+
+function cargarFecha() {
+  const fecha = document.getElementById("fecha").value;
+  if (!fecha) return;
+  document.getElementById("mes").value = fecha.slice(0,7);
+  const r = registro(fecha);
+  document.getElementById("notaDia").value = r.nota || "";
+  document.getElementById("actividad").value =
+    ["miércoles","viernes","domingo"].includes(r.actividad)
+      ? r.actividad : "auto";
+  document.getElementById("avisoDia").textContent =
+    r.noProyecto ? "Esta fecha está marcada como No hubo proyecto."
+    : nombreDia(fecha)==="miércoles"
+      ? "Miércoles: registra la asistencia y marca el devocional a quienes lo realizaron."
+      : "Marca la asistencia del día. El devocional se revisa únicamente los miércoles.";
+  dibujarTablaDiaria();
+}
+
+function dibujarTablaDiaria() {
+  const fecha = document.getElementById("fecha").value;
+  if (!fecha) return;
+
+  const r = registro(fecha);
+
+  // Determinar si corresponde revisar devocional
+  const actividadSeleccionada = document.getElementById("actividad").value;
+  const esMiercoles = actividadSeleccionada === "auto"
+    ? nombreDia(fecha) === "miércoles"
+    : actividadSeleccionada === "miércoles";
+
+  let html = `<table>
+    <thead>
+      <tr>
+        <th>N.º</th>
+        <th class="name">Nombre del niño</th>
+        <th>Asistencia</th>
+        <th>Devocional</th>
+        <th>Observación</th>
+      </tr>
+    </thead>
+    <tbody>`;
+
+  datos.ninos.forEach((n, i) => {
+    const a = (r.asistencia && r.asistencia[n.id]) || {};
+    const estado = a.estado || "";
+
+    // El devocional se puede marcar cualquier miércoles,
+    // siempre que el niño esté presente y haya proyecto.
+    const bloquearDevocional = !esMiercoles || r.noProyecto;
+
+    html += `
+      <tr>
+        <td>${i + 1}</td>
+
+        <td class="name">${escapar(n.nombre)}</td>
+
+        <td>
+          <select class="status"
+            ${r.noProyecto ? "disabled" : ""}
+            onchange="cambiarAsistencia(${n.id}, 'estado', this.value)">
+            <option value="" ${estado === "" ? "selected" : ""}>
+              Sin marcar
+            </option>
+            <option value="presente" ${estado === "presente" ? "selected" : ""}>
+              Presente
+            </option>
+            <option value="ausente" ${estado === "ausente" ? "selected" : ""}>
+              Falta
+            </option>
+            <option value="justificado" ${estado === "justificado" ? "selected" : ""}>
+              Justificada
+            </option>
+          </select>
+        </td>
+
+        <td>
+          ${
+            esMiercoles
+              ? `<input type="checkbox"
+                   ${a.devocional ? "checked" : ""}
+                   ${bloquearDevocional ? "disabled" : ""}
+                   onchange="cambiarAsistencia(${n.id}, 'devocional', this.checked)">`
+              : "—"
+          }
+        </td>
+
+        <td>
+          <input
+            value="${escapar(a.observacion || "")}"
+            ${r.noProyecto ? "disabled" : ""}
+            onchange="cambiarAsistencia(${n.id}, 'observacion', this.value)"
+            placeholder="Opcional">
+        </td>
+      </tr>`;
+  });
+
+  html += `</tbody></table>`;
+
+  document.getElementById("tablaDiaria").innerHTML = html;
+}
+
+function cambiarAsistencia(id,campo,valor) {
+  const fecha = document.getElementById("fecha").value;
+  if (!fecha) return;
+  if (!datos.registros[fecha]) datos.registros[fecha] = registro(fecha);
+  const r = datos.registros[fecha];
+  r.asistencia[id] ||= {estado:"",devocional:false,observacion:""};
+
+  if (campo==="estado") {
+    r.asistencia[id].estado = valor;
+    if (valor!=="presente") r.asistencia[id].devocional = false;
+    r.noProyecto = false;
+  } else {
+    r.asistencia[id][campo] = valor;
+  }
+}
+
+function marcarTodos(estado) {
+  const fecha = document.getElementById("fecha").value;
+  if (!fecha) return alert("Selecciona una fecha primero.");
+  if (!datos.registros[fecha]) datos.registros[fecha] = registro(fecha);
+  const r = datos.registros[fecha];
+  r.noProyecto = false;
+  datos.ninos.forEach(n => {
+    r.asistencia[n.id] ||= {};
+    r.asistencia[n.id].estado = estado;
+    if (estado!=="presente") r.asistencia[n.id].devocional = false;
+  });
+  dibujarTablaDiaria();
+}
+
+function noHuboProyecto() {
+  const fecha = document.getElementById("fecha").value;
+  if (!fecha) return alert("Selecciona una fecha primero.");
+  if (!confirm("¿Marcar esta fecha como No hubo proyecto?")) return;
+  datos.registros[fecha] = {
+    fecha,actividad:nombreDia(fecha),
+    nota:"No hubo proyecto",noProyecto:true,asistencia:{}
+  };
+  document.getElementById("notaDia").value = "No hubo proyecto";
+  dibujarTablaDiaria();
+}
+
+function guardarFecha() {
+  const fecha = document.getElementById("fecha").value;
+  if (!fecha) return alert("Selecciona una fecha.");
+  if (!datos.registros[fecha]) datos.registros[fecha] = registro(fecha);
+  const r = datos.registros[fecha];
+  r.fecha = fecha;
+  r.actividad = document.getElementById("actividad").value==="auto"
+    ? nombreDia(fecha) : document.getElementById("actividad").value;
+  r.nota = document.getElementById("notaDia").value.trim();
+
+  if (!r.noProyecto) {
+    datos.ninos.forEach(n => {
+      r.asistencia[n.id] ||= {estado:"",devocional:false,observacion:""};
+    });
+  }
+  if (guardarDatos()) {
+    dibujarMes();
+    dibujarResumen();
+    alert("Asistencia guardada correctamente.");
+  }
+}
+
+function marca(a,r) {
+  if (r && r.noProyecto) return "NP";
+  if (!a) return "";
+  if (a.estado==="presente") return "✓";
+  if (a.estado==="ausente") return "F";
+  if (a.estado==="justificado") return "J";
+  return "";
+}
+
+// =====================================================
+// 4. TABLA MENSUAL E IMPRESIÓN
+// =====================================================
+
+function dibujarMes() {
+  const mes = document.getElementById("mes").value;
+  if (!mes) return;
+  const fechas = fechasDelMes(mes);
+  const [a,m] = mes.split("-").map(Number);
+  const meses = ["ENERO","FEBRERO","MARZO","ABRIL","MAYO","JUNIO",
+    "JULIO","AGOSTO","SEPTIEMBRE","OCTUBRE","NOVIEMBRE","DICIEMBRE"];
+
+  let html = `<thead><tr>
+    <th rowspan="2">N.º</th><th rowspan="2" class="name">NOMBRES</th>
+    <th colspan="${fechas.length}" class="monthhead">${meses[m-1]} ${a}</th>
+    <th rowspan="2">Fecha ingreso</th><th rowspan="2">Fecha salida</th>
+    </tr><tr>`;
+
+  fechas.forEach(f => {
+    html += `<th class="dayhead" title="${f}">${abreviarFecha(f)}</th>`;
+  });
+  html += "</tr></thead><tbody>";
+
+  datos.ninos.forEach((n,i) => {
+    html += `<tr><td>${i+1}</td><td class="name">${escapar(n.nombre)}</td>`;
+    fechas.forEach(f => {
+      const r = datos.registros[f];
+      const a = r && r.asistencia ? r.asistencia[n.id] : null;
+      let valor = marca(a,r);
+      if (a && a.estado==="presente" && nombreDia(f)==="miércoles" && a.devocional) {
+        valor = "✓*";
+      }
+      html += `<td>${valor}</td>`;
+    });
+    html += `<td>${escapar(n.fechaIngreso||"")}</td>
+      <td>${escapar(n.fechaSalida||"")}</td></tr>`;
+  });
+
+  html += "</tbody>";
+  document.getElementById("tablaMes").innerHTML = html;
+}
+
+function imprimirMes() {
+  dibujarMes();
+  window.print();
+}
+
+// =====================================================
+// 5. REGISTRO DE NIÑOS Y EXPEDIENTES
+// =====================================================
+
+function abrirFormulario(id=null) {
+  document.getElementById("formPanel").hidden = false;
+  document.getElementById("formNino").reset();
+  document.getElementById("ninoId").value = "";
+  document.getElementById("archivosActuales").textContent = "";
+  document.getElementById("formTitulo").textContent = id ? "Editar niño" : "Registrar niño";
+
+  if (id!==null) {
+    const n = datos.ninos.find(x => x.id===id);
+    if (!n) return;
+    document.getElementById("ninoId").value = n.id;
+    document.getElementById("nombre").value = n.nombre || "";
+    document.getElementById("codigo").value = n.codigo || "";
+    document.getElementById("nacimiento").value = n.nacimiento || "";
+    document.getElementById("padres").value = n.padres || "";
+    document.getElementById("representante").value = n.representante || "";
+    document.getElementById("telefono").value = n.telefono || "";
+    document.getElementById("observaciones").value = n.observaciones || "";
+    document.getElementById("archivosActuales").textContent =
+      `Foto: ${n.foto?"guardada":"sin foto"}. PDF: ${n.pdf?"guardado":"sin PDF"}.`;
+  }
+  document.getElementById("formPanel").scrollIntoView({behavior:"smooth"});
+}
+
+function cerrarFormulario() {
+  document.getElementById("formPanel").hidden = true;
+}
+
+function leerArchivo(archivo) {
+  return new Promise((resolve,reject) => {
+    if (!archivo) return resolve(null);
+    const lector = new FileReader();
+    lector.onload = () => resolve(lector.result);
+    lector.onerror = reject;
+    lector.readAsDataURL(archivo);
+  });
+}
+
+async function guardarNino(e) {
+  e.preventDefault();
+  const id = Number(document.getElementById("ninoId").value) || datos.siguienteId++;
+  let n = datos.ninos.find(x => x.id===id) || {id};
+  const archivoFoto = document.getElementById("foto").files[0];
+  const archivoPDF = document.getElementById("pdf").files[0];
+
+  if (archivoFoto && archivoFoto.size>2*1024*1024)
+    return alert("La foto debe pesar menos de 2 MB.");
+  if (archivoPDF && archivoPDF.size>5*1024*1024)
+    return alert("El PDF debe pesar menos de 5 MB.");
+  if (archivoPDF && archivoPDF.type!=="application/pdf")
+    return alert("Selecciona un archivo PDF válido.");
+
+  try {
+    const foto = await leerArchivo(archivoFoto);
+    const pdf = await leerArchivo(archivoPDF);
+
+    Object.assign(n,{
+      nombre:document.getElementById("nombre").value.trim(),
+      codigo:document.getElementById("codigo").value.trim(),
+      nacimiento:document.getElementById("nacimiento").value,
+      padres:document.getElementById("padres").value.trim(),
+      representante:document.getElementById("representante").value.trim(),
+      telefono:document.getElementById("telefono").value.trim(),
+      observaciones:document.getElementById("observaciones").value.trim(),
+      foto:foto || n.foto || "",
+      pdf:pdf || n.pdf || ""
+    });
+
+    if (!datos.ninos.some(x=>x.id===id)) datos.ninos.push(n);
+
+    if (guardarDatos()) {
+      cerrarFormulario();
+      dibujarNinos();
+      dibujarMes();
+      dibujarResumen();
+      actualizarFiltroNinos();
+    }
+  } catch(error) {
+    alert("No se pudieron leer los archivos.");
+  }
+}
+
+function dibujarNinos() {
+  const q = (document.getElementById("buscar")?.value || "").toLowerCase();
+  const lista = datos.ninos.filter(n =>
+    n.nombre.toLowerCase().includes(q) ||
+    String(n.codigo||"").toLowerCase().includes(q)
+  );
+
+  document.getElementById("listaNinos").innerHTML = lista.map(n => `
+    <div class="childcard">
+      ${n.foto
+        ? `<img class="photo" src="${n.foto}" alt="Fotografía">`
+        : `<div class="photo"></div>`}
+      <h3>${escapar(n.nombre)}</h3>
+      <p class="muted">Código: ${escapar(n.codigo||"—")}</p>
+      <p class="muted">Nacimiento: ${escapar(n.nacimiento||"—")}</p>
+      <p>Padres: ${escapar(n.padres||"—")}</p>
+      <p>Representante: ${escapar(n.representante||"—")}</p>
+      <p>Teléfono: ${escapar(n.telefono||"—")}</p>
+      <p class="muted">Documento PDF: ${n.pdf?"Adjunto":"No adjunto"}</p>
+      <div class="actions">
+        <button class="secondary" onclick="verFicha(${n.id})">Ver ficha</button>
+        <button class="secondary" onclick="abrirFormulario(${n.id})">Editar</button>
+        <button class="danger" onclick="eliminarNino(${n.id})">Eliminar</button>
+      </div>
+    </div>
+  `).join("") || "<p>No hay niños registrados con esa búsqueda.</p>";
+}
+
+function verFicha(id) {
+  const n = datos.ninos.find(x=>x.id===id);
+  if (!n) return;
+  const url = n.pdf;
+  const ventana = window.open("", "_blank");
+  if (!ventana) return alert("Permite ventanas emergentes para ver la ficha.");
+
+  ventana.document.write(`
+    <html lang="es"><head><meta charset="UTF-8">
+    <title>Ficha de ${escapar(n.nombre)}</title>
+    <style>body{font-family:Arial;padding:25px}img{max-width:140px}
+    table{border-collapse:collapse;width:100%}td{border:1px solid #ddd;padding:8px}
+    </style></head><body>
+    <h2>Expediente del niño</h2>
+    ${n.foto?`<img src="${n.foto}">`:""}
+    <h3>${escapar(n.nombre)}</h3>
+    <table>
+      <tr><td>Código</td><td>${escapar(n.codigo||"—")}</td></tr>
+      <tr><td>Fecha de nacimiento</td><td>${escapar(n.nacimiento||"—")}</td></tr>
+      <tr><td>Padres</td><td>${escapar(n.padres||"—")}</td></tr>
+      <tr><td>Representante</td><td>${escapar(n.representante||"—")}</td></tr>
+      <tr><td>Teléfono</td><td>${escapar(n.telefono||"—")}</td></tr>
+      <tr><td>Observaciones</td><td>${escapar(n.observaciones||"—")}</td></tr>
+    </table>
+    ${url?'<p>El expediente PDF está adjunto en el sistema principal.</p>':""}
+    <button onclick="window.print()">Imprimir ficha</button>
+    </body></html>
+  `);
+  ventana.document.close();
+}
+
+function eliminarNino(id) {
+  const n = datos.ninos.find(x=>x.id===id);
+  if (!n || !confirm(`¿Eliminar a ${n.nombre} y quitarlo de las listas?`)) return;
+  datos.ninos = datos.ninos.filter(x=>x.id!==id);
+  Object.values(datos.registros).forEach(r=>delete r.asistencia[id]);
+  if (guardarDatos()) {
+    dibujarNinos();dibujarMes();dibujarResumen();actualizarFiltroNinos();
+  }
+}
+
+// =====================================================
+// 6. HISTORIAL: EDITAR Y ELIMINAR REGISTROS
+// =====================================================
+
+function actualizarFiltroNinos() {
+  const sel = document.getElementById("filtroNino");
+  const anterior = sel.value;
+  sel.innerHTML = '<option value="">Todos los niños</option>' +
+    datos.ninos.map(n=>`<option value="${n.id}">${escapar(n.nombre)}</option>`).join("");
+  sel.value = anterior;
+}
+
+function dibujarHistorial() {
+  const id = document.getElementById("filtroNino").value;
+  const mes = document.getElementById("filtroMes").value;
+  const estado = document.getElementById("filtroEstado").value;
+  const filas = [];
+
+  Object.values(datos.registros).sort((a,b)=>b.fecha.localeCompare(a.fecha))
+    .forEach(r=>{
+      if (mes && !r.fecha.startsWith(mes)) return;
+
+      if (r.noProyecto) {
+        if (!estado || estado==="no hubo proyecto") {
+          filas.push({fecha:r.fecha,nombre:"Todos los niños",
+            estado:"no hubo proyecto",nota:r.nota||"",id:""});
+        }
+        return;
+      }
+
+      Object.entries(r.asistencia||{}).forEach(([nId,a])=>{
+        if (id && String(nId)!==id) return;
+        if (estado && a.estado!==estado) return;
+        const n=datos.ninos.find(x=>x.id===Number(nId));
+        if (!n) return;
+        if (!estado && !["ausente","justificado","presente"].includes(a.estado)) return;
+
+        filas.push({fecha:r.fecha,nombre:n.nombre,estado:a.estado||"Sin marcar",
+          nota:a.observacion||r.nota||"",id:nId});
+      });
+    });
+
+  document.getElementById("tablaHistorial").innerHTML = filas.length ? `
+    <div class="tablewrap"><table><thead><tr>
+      <th>Fecha</th><th>Nombre</th><th>Estado</th><th>Observación</th><th>Acciones</th>
+    </tr></thead><tbody>${filas.map(f=>`
+      <tr><td>${f.fecha}</td><td class="name">${escapar(f.nombre)}</td>
+      <td>${escapar(f.estado)}</td><td>${escapar(f.nota)}</td>
+      <td>
+        ${f.id?`<button class="secondary" onclick="editarHistorial('${f.fecha}',${f.id})">Editar</button>`:""}
+        <button class="danger" onclick="eliminarRegistro('${f.fecha}','${f.id}')">Eliminar</button>
+      </td></tr>`).join("")}</tbody></table></div>
+  ` : "<p>No hay registros que coincidan con los filtros.</p>";
+}
+
+function editarHistorial(fecha,id) {
+  ir("month");
+  document.getElementById("fecha").value=fecha;
+  cargarFecha();
+  alert("Modifica la asistencia del niño en la lista del día y pulsa Guardar asistencia.");
+}
+
+function eliminarRegistro(fecha,id) {
+  if (!confirm("¿Eliminar este registro?")) return;
+  if (!id) {
+    delete datos.registros[fecha];
+  } else if (datos.registros[fecha]) {
+    delete datos.registros[fecha].asistencia[id];
+    if (!Object.keys(datos.registros[fecha].asistencia||{}).length &&
+        !datos.registros[fecha].noProyecto) {
+      delete datos.registros[fecha];
+    }
+  }
+  if (guardarDatos()) {
+    dibujarHistorial();dibujarMes();dibujarResumen();
+  }
+}
+
+// =====================================================
+// 7. RESUMEN GENERAL
+// =====================================================
+
+function dibujarResumen() {
+  document.getElementById("totalNinos").textContent=datos.ninos.length;
+  document.getElementById("totalFechas").textContent=Object.keys(datos.registros).length;
+  document.getElementById("totalFotos").textContent=datos.ninos.filter(n=>n.foto).length;
+  document.getElementById("totalPDF").textContent=datos.ninos.filter(n=>n.pdf).length;
+
+  const lista=Object.values(datos.registros)
+    .sort((a,b)=>b.fecha.localeCompare(a.fecha)).slice(0,5);
+
+  document.getElementById("ultimosRegistros").innerHTML=lista.length ? `
+    <div class="tablewrap"><table><thead><tr>
+      <th>Fecha</th><th>Actividad</th><th>Presentes</th><th>Faltas</th><th>Estado</th>
+    </tr></thead><tbody>${lista.map(r=>{
+      const a=Object.values(r.asistencia||{});
+      return `<tr><td>${r.fecha}</td><td>${escapar(r.actividad)}</td>
+        <td>${a.filter(x=>x.estado==="presente").length}</td>
+        <td>${a.filter(x=>x.estado==="ausente").length}</td>
+        <td>${r.noProyecto?"No hubo proyecto":"Guardado"}</td></tr>`;
+    }).join("")}</tbody></table></div>
+  ` : "<p>Aún no hay registros guardados.</p>";
+}
+
+// =====================================================
+// 8. EXPORTAR Y RESTAURAR COPIAS
+// =====================================================
+
+function exportar() {
+  const archivo=new Blob([JSON.stringify(datos,null,2)],{type:"application/json"});
+  const url=URL.createObjectURL(archivo);
+  const enlace=document.createElement("a");
+  enlace.href=url;
+  enlace.download="copia-proyecto-GEVE-2026.json";
+  enlace.click();
+  URL.revokeObjectURL(url);
+}
+
+function importar() {
+  const archivo=document.getElementById("archivoCopia").files[0];
+  if (!archivo) return alert("Selecciona una copia JSON.");
+  if (!confirm("La restauración reemplazará los datos actuales. ¿Continuar?")) return;
+
+  const lector=new FileReader();
+  lector.onload=()=>{
+    try {
+      const copia=JSON.parse(lector.result);
+      if (!Array.isArray(copia.ninos) || typeof copia.registros!=="object") {
+        throw new Error("Formato inválido");
+      }
+      datos=copia;
+      datos.siguienteId ||= Math.max(0,...datos.ninos.map(n=>n.id))+1;
+      if (guardarDatos()) {
+        dibujarResumen();dibujarMes();dibujarNinos();
+        actualizarFiltroNinos();dibujarHistorial();
+        alert("Copia restaurada correctamente.");
+      }
+    } catch(e) {
+      alert("El archivo no es una copia válida de esta aplicación.");
+    }
+  };
+  lector.readAsText(archivo);
+}
+
+function borrarTodo() {
+  if (!confirm("¿Eliminar todos los niños, expedientes y asistencias?")) return;
+  if (!confirm("Esta acción no se puede deshacer sin una copia de seguridad.")) return;
+  datos={ninos:[],registros:{},siguienteId:1};
+  if (guardarDatos()) {
+    dibujarResumen();dibujarMes();dibujarNinos();
+    actualizarFiltroNinos();dibujarHistorial();
+  }
+}
+
+// =====================================================
+// 9. INICIAR APLICACIÓN
+// =====================================================
+
+document.getElementById("mes").addEventListener("change",()=>{
+  const mes=document.getElementById("mes").value;
+  const fechas=fechasDelMes(mes);
+  if (fechas.length) {
+    document.getElementById("fecha").value=fechas[0];
+    cargarFecha();
+  }
+  dibujarMes();
+});
+
+iniciar();
+
+const hoy=new Date();
+const hoyTexto=`${hoy.getFullYear()}-${String(hoy.getMonth()+1).padStart(2,"0")}-${String(hoy.getDate()).padStart(2,"0")}`;
+document.getElementById("fecha").value=hoyTexto;
+document.getElementById("mes").value=hoyTexto.slice(0,7);
+
+cargarFecha();
+dibujarMes();
+dibujarNinos();
+dibujarResumen();
+actualizarFiltroNinos();
+dibujarHistorial();
+</script>
+</body>
+</html>
